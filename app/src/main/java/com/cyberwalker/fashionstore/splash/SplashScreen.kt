@@ -15,6 +15,7 @@
  */
 package com.cyberwalker.fashionstore.splash
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -25,12 +26,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cyberwalker.fashionstore.R
+import com.cyberwalker.fashionstore.util.showMessage
 import com.cyberwalker.fashionstore.ui.theme.dark
 import com.cyberwalker.fashionstore.ui.theme.large
 import com.cyberwalker.fashionstore.ui.theme.small_caption
@@ -81,11 +84,14 @@ private fun SplashScreenContent(modifier: Modifier, onAction: (actions: SplashSc
             modifier = Modifier.align(Alignment.CenterHorizontally),
             contentDescription = null
         )
+        val context = LocalContext.current
         Image(
             modifier = Modifier
                 .weight(1F)
                 .align(Alignment.CenterHorizontally).clickable {
-                    onAction(SplashScreenActions.LoadHome)
+                    showMessage(context, "login here")
+                    onAction(SplashScreenActions.LoadLogin)
+//                    onAction(SplashScreenActions.LoadHome)
                 },
             painter = painterResource(id = R.drawable.splash_cta),
             contentDescription = null
@@ -94,5 +100,6 @@ private fun SplashScreenContent(modifier: Modifier, onAction: (actions: SplashSc
 }
 
 sealed class SplashScreenActions {
-    object LoadHome : SplashScreenActions()
+   // object LoadHome : SplashScreenActions()
+   object LoadLogin : SplashScreenActions()
 }

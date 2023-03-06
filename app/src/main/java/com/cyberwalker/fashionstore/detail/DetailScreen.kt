@@ -23,12 +23,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -44,6 +45,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.cyberwalker.fashionstore.R
 import com.cyberwalker.fashionstore.dump.vertical
 import com.cyberwalker.fashionstore.ui.theme.*
+import androidx.compose.runtime.livedata.observeAsState
+import com.cyberwalker.fashionstore.util.showMessage
 
 @Composable
 fun DetailScreen(
@@ -54,12 +57,17 @@ fun DetailScreen(
     Scaffold(
         scaffoldState = scaffoldState
     ) { innerPadding ->
-        DetailScreenContent(modifier = Modifier.padding(innerPadding), onAction = onAction)
+        DetailScreenContent(
+            modifier = Modifier.padding(innerPadding),
+            onAction = onAction,
+            viewModel = viewModel
+        )
     }
 }
 
 @Composable
 private fun DetailScreenContent(
+    viewModel: DetailViewModel,
     modifier: Modifier,
     onAction: (actions: DetailScreenActions) -> Unit
 ) {
@@ -87,46 +95,96 @@ private fun DetailScreenContent(
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier
-                    .size(45.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(color = sizeGreen, shape = RoundedCornerShape(12.dp))
-                    .clickable { },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "S", style = MaterialTheme.typography.medium_18_bold.copy(dark))
-            }
-            Box(modifier = Modifier
-                .size(45.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(color = sizeGreen, shape = RoundedCornerShape(12.dp))
-                .clickable { }, contentAlignment = Alignment.Center) {
-                Text(text = "M", style = MaterialTheme.typography.medium_18_bold.copy(dark))
-            }
-            Box(modifier = Modifier
-                .size(56.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(color = highlight, shape = RoundedCornerShape(12.dp))
-                .clickable { }, contentAlignment = Alignment.Center) {
-                Text(text = "L", style = MaterialTheme.typography.medium_18_bold.copy(color = Color.White))
-            }
-            Box(modifier = Modifier
-                .size(45.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(color = sizeGreen, shape = RoundedCornerShape(12.dp))
-                .clickable { }, contentAlignment = Alignment.Center) {
-                Text(text = "XL", style = MaterialTheme.typography.medium_18_bold.copy(dark))
-            }
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+//        var selected by remember { mutableStateOf("L") }
+            val selected = viewModel.selectedSize.observeAsState().value
+
+            SizeBox(viewModel = viewModel, size = "S", selected ?: "L")
+            SizeBox(viewModel = viewModel, size = "M", selected ?: "L")
+            SizeBox(viewModel = viewModel, size = "L", selected ?: "L")
+            SizeBox(viewModel = viewModel, size = "XL", selected ?: "L")
+//            Box(
+//                modifier = if (selected == "S")
+//                    Modifier
+//                        .size(56.dp)
+//                        .clip(RoundedCornerShape(12.dp))
+//                        .background(color = highlight, shape = RoundedCornerShape(12.dp))
+//                        .clickable { selected = "S" }
+//                else
+//                    Modifier
+//                        .size(45.dp)
+//                        .clip(RoundedCornerShape(12.dp))
+//                        .background(color = sizeGreen, shape = RoundedCornerShape(12.dp))
+//                        .clickable { selected = "S" },
+//                contentAlignment = Alignment.Center
+//            ) {
+//                Text(
+//                    text = "S",
+//                    style = MaterialTheme.typography.medium_18_bold
+//                        .copy(if (selected == "S") Color.White else dark)
+//                )
+//            }
+//            Box(
+//                modifier = Modifier
+//                    .size(if (selected == "M") 56.dp else 45.dp)
+//                    .clip(RoundedCornerShape(12.dp))
+//                    .background(
+//                        color = if (selected == "M") highlight else sizeGreen,
+//                        shape = RoundedCornerShape(12.dp)
+//                    )
+//                    .clickable { selected = "M" },
+//                contentAlignment = Alignment.Center
+//            ) {
+//                Text(
+//                    text = "M", style = MaterialTheme.typography.medium_18_bold
+//                        .copy(if (selected == "M") Color.White else dark)
+//                )
+//            }
+//            Box(
+//                modifier = Modifier
+//                    .size(if (selected == "L") 56.dp else 45.dp)
+//                    .clip(RoundedCornerShape(12.dp))
+//                    .background(
+//                        color = if (selected == "L") highlight else sizeGreen,
+//                        shape = RoundedCornerShape(12.dp)
+//                    )
+//                    .clickable { viewModel.setSelectedSize( "L") },
+//                contentAlignment = Alignment.Center
+//            ) {
+//                Text(
+//                    text = "L",
+//                    style = MaterialTheme.typography.medium_18_bold
+//                        .copy(if (selected == "L") Color.White else dark)
+//                )
+//            }
+//            Box(
+//                modifier = Modifier
+//                    .size(if (selected == "XL") 56.dp else 45.dp)
+//                    .clip(RoundedCornerShape(12.dp))
+//                    .background(
+//                        color = if (selected == "XL") highlight else sizeGreen,
+//                        shape = RoundedCornerShape(12.dp)
+//                    )
+//                    .clickable { viewModel.setSelectedSize("XL") },
+//                contentAlignment = Alignment.Center
+//            ) {
+//                Text(
+//                    text = "XL",
+//                    style = MaterialTheme.typography.medium_18_bold
+//                        .copy(if (selected == "XL") Color.White else dark)
+//                )
+//            }
         }
         Spacer(modifier = Modifier.weight(1F))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-           Column {
-               Text(text = "Price", style = MaterialTheme.typography.caption.copy(gray))
-               Spacer(modifier = Modifier.size(4.dp))
-               Text(text = "₹1284", style = MaterialTheme.typography.medium_18)
-           }
+            Column {
+                Text(text = "Price", style = MaterialTheme.typography.caption.copy(gray))
+                Spacer(modifier = Modifier.size(4.dp))
+                Text(text = "₹1284", style = MaterialTheme.typography.medium_18)
+            }
             Button(
                 onClick = { },
                 colors = ButtonDefaults.buttonColors(backgroundColor = highlight),
@@ -211,6 +269,7 @@ private fun ImageBox(onAction: (actions: DetailScreenActions) -> Unit) {
             .fillMaxWidth()
             .background(color = cardColorBlue, shape = RoundedCornerShape(16.dp))
     ) {
+        val context = LocalContext.current
         Image(
             modifier = Modifier
                 .align(Alignment.TopStart)
@@ -222,7 +281,8 @@ private fun ImageBox(onAction: (actions: DetailScreenActions) -> Unit) {
         Image(
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(end = 16.dp, top = 16.dp),
+                .padding(end = 16.dp, top = 16.dp)
+                .clickable { showMessage(context, "favorite") },
             painter = painterResource(id = R.drawable.ic_heart_filled),
             contentDescription = null
         )
@@ -230,7 +290,7 @@ private fun ImageBox(onAction: (actions: DetailScreenActions) -> Unit) {
             modifier = Modifier
                 .defaultMinSize(minWidth = 287.dp, minHeight = 335.dp)
                 .align(Alignment.BottomCenter),
-            painter = painterResource(id = R.drawable.ic_girl),
+            painter = painterResource(id = R.drawable.ic_girl),//how to make it dynamic
             contentDescription = null
         )
     }
@@ -276,6 +336,46 @@ private fun TabRow() {
         )
     }
 }
+
+@Composable
+private fun SizeBox(
+    viewModel: DetailViewModel,
+    size: String,
+    selected: String,
+) {
+    val context = LocalContext.current
+    Box(
+        modifier = if (selected == size)
+            modifierSelected.clickable {
+                viewModel.setSelectedSize(size)
+                showMessage(context, "size box $size")
+            }
+        else
+            modifierUnselected.clickable {
+                viewModel.setSelectedSize(size)
+                showMessage(context, "size box $size selected $selected")
+            },
+
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = size,
+            style = MaterialTheme.typography.medium_18_bold
+                .copy(if (selected == size) Color.White else dark)
+        )
+    }
+}
+
+val modifierSelected = Modifier
+    .size(56.dp)
+    .clip(RoundedCornerShape(12.dp))
+    .background(color = highlight, shape = RoundedCornerShape(12.dp))
+
+val modifierUnselected = Modifier
+    .size(45.dp)
+    .clip(RoundedCornerShape(12.dp))
+    .background(color = sizeGreen, shape = RoundedCornerShape(12.dp))
+
 
 sealed class DetailScreenActions {
     object Back : DetailScreenActions()

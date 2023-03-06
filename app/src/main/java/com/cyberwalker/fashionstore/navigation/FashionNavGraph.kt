@@ -28,6 +28,8 @@ import com.cyberwalker.fashionstore.detail.DetailScreenActions
 import com.cyberwalker.fashionstore.dump.animatedComposable
 import com.cyberwalker.fashionstore.home.HomeScreen
 import com.cyberwalker.fashionstore.home.HomeScreenActions
+import com.cyberwalker.fashionstore.login.LoginSCreen
+import com.cyberwalker.fashionstore.login.LoginScreenActions
 import com.cyberwalker.fashionstore.splash.SplashScreen
 import com.cyberwalker.fashionstore.splash.SplashScreenActions
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -37,6 +39,8 @@ sealed class Screen(val name: String, val route: String) {
     object Splash : Screen("splash", "splash")
     object Home : Screen("home", "home")
     object Detail : Screen("detail", "detail")
+    object Login : Screen("login", "login")
+
 }
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -54,7 +58,11 @@ fun FashionNavGraph(
         modifier = modifier
     ) {
         animatedComposable(Screen.Splash.route) {
-            SplashScreen(onAction = actions::navigateToHome)
+            SplashScreen(onAction = actions::navigateToLogin)//navigateToHome)
+        }
+
+        animatedComposable(Screen.Login.route) {
+            LoginSCreen(onAction = actions::navigateFromLogin, navController = navController)
         }
 
         animatedComposable(Screen.Home.route) {
@@ -68,14 +76,27 @@ fun FashionNavGraph(
 }
 
 class NavActions(private val navController: NavController) {
-    fun navigateToHome(_A: SplashScreenActions) {
-        navController.navigate(Screen.Home.name) {
+    fun navigateToLogin(_A: SplashScreenActions) {
+        navController.navigate(Screen.Login.name) {
             popUpTo(Screen.Splash.route){
-                inclusive = true
+                inclusive = false
+            }
+        }
+//        fun navigateToHome(_A: SplashScreenActions) {
+//        navController.navigate(Screen.Home.name) {
+//            popUpTo(Screen.Splash.route){
+//                inclusive = false
+//            }
+//        }
+    }
+
+    fun navigateFromLogin(actions: LoginScreenActions) {
+        when (actions) {
+            LoginScreenActions.Home -> {
+                navController.navigate(Screen.Home.name)
             }
         }
     }
-
     fun navigateFromHome(actions: HomeScreenActions) {
         when (actions) {
             HomeScreenActions.Details -> {

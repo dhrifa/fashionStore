@@ -18,9 +18,8 @@ package com.cyberwalker.fashionstore.home
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import com.cyberwalker.fashionstore.data.source.LoggedInUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -32,6 +31,13 @@ class HomeViewModel @Inject constructor(savedStateHandle: SavedStateHandle) : Vi
     var uiState by mutableStateOf(HomeUiState())
         private set
 
+
+    private var _loggedInUser: MutableLiveData<LoggedInUser> = MutableLiveData<LoggedInUser>()
+    val loggedInUser: LiveData<LoggedInUser> get() = _loggedInUser
+
+    fun getLoggedInUser(){
+        _loggedInUser.value = LoggedInUser("","")
+    }
 }
 
 data class HomeUiState(

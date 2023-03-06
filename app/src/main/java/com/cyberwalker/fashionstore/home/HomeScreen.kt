@@ -15,17 +15,21 @@
  */
 package com.cyberwalker.fashionstore.home
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -36,6 +40,7 @@ import com.cyberwalker.fashionstore.R
 import com.cyberwalker.fashionstore.dump.BottomNav
 import com.cyberwalker.fashionstore.dump.vertical
 import com.cyberwalker.fashionstore.ui.theme.*
+import com.cyberwalker.fashionstore.util.showMessage
 
 @Composable
 fun HomeScreen(
@@ -50,12 +55,13 @@ fun HomeScreen(
             BottomNav(navController = navController)
         }
     ) { innerPadding ->
-        HomeScreenContent(modifier = Modifier.padding(innerPadding), onAction = onAction)
+        HomeScreenContent(viewModel=viewModel, modifier = Modifier.padding(innerPadding), onAction = onAction)
     }
 }
 
 @Composable
 private fun HomeScreenContent(
+    viewModel: HomeViewModel,
     modifier: Modifier,
     onAction: (actions: HomeScreenActions) -> Unit,
 ) {
@@ -65,11 +71,13 @@ private fun HomeScreenContent(
             .verticalScroll(rememberScrollState())
             .semantics { contentDescription = "Home Screen" }
     ) {
+        val loggedInUser = viewModel.loggedInUser.observeAsState().value
         Row(
             modifier = Modifier
                 .padding(32.dp)
                 .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
+            val context = LocalContext.current
             Box(
                 modifier = Modifier.size(width = 37.dp, height = 40.dp),
                 contentAlignment = Alignment.Center
@@ -89,16 +97,18 @@ private fun HomeScreenContent(
             Spacer(modifier = Modifier.size(24.dp))
             Column {
                 Text(text = "Welcome", style = MaterialTheme.typography.small_caption)
-                Text(text = "Hi Babloo", style = MaterialTheme.typography.medium_14)
+                Text(text = "Hi ${loggedInUser?.displayName}", style = MaterialTheme.typography.medium_14)
             }
             Spacer(modifier = Modifier.weight(1F))
             Image(
                 modifier = Modifier
                     .size(50.dp)
-                    .clickable { }
+                    .clickable {
+                      showMessage(context, "Drawer cliqued")
+                    }
                     .padding(12.dp),
                 painter = painterResource(id = R.drawable.menu_bar),
-                contentDescription = null
+                contentDescription = null,
             )
         }
 
@@ -334,5 +344,6 @@ private fun GridOfImages(onAction: (actions: HomeScreenActions) -> Unit,) {
 
 
 sealed class HomeScreenActions {
+   // object Login : HomeScreenActions()
     object Details : HomeScreenActions()
 }

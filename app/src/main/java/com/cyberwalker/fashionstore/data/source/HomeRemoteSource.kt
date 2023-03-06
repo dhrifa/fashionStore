@@ -19,3 +19,9 @@ class HomeRemoteSource {
 
     fun get() = listOf<String>()
 }
+
+
+data class LoggedInUser(
+    var userId: String,
+    var displayName: String
+)

@@ -18,19 +18,25 @@ package com.cyberwalker.fashionstore.detail
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class DetailViewModel @Inject constructor(savedStateHandle: SavedStateHandle) : ViewModel() {
+class DetailViewModel @Inject constructor(savedStateHandle: SavedStateHandle)
+    : ViewModel() {
 
     var uiState by mutableStateOf(DetailUiState())
         private set
+
+    private var _selectedSize: MutableLiveData<String> = MutableLiveData<String>()
+    val selectedSize: LiveData<String> get() = _selectedSize
+
+    fun setSelectedSize(selected: String){
+        _selectedSize.postValue(selected)
+    }
 }
 
 data class DetailUiState(
