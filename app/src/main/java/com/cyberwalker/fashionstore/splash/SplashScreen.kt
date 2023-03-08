@@ -15,7 +15,13 @@
  */
 package com.cyberwalker.fashionstore.splash
 
+import android.Manifest
+import android.app.Activity
+import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -27,15 +33,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cyberwalker.fashionstore.R
 import com.cyberwalker.fashionstore.ui.theme.dark
 import com.cyberwalker.fashionstore.ui.theme.large
 import com.cyberwalker.fashionstore.ui.theme.small_caption
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.MultiplePermissionsState
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
 @Composable
 fun SplashScreen(
@@ -46,9 +58,11 @@ fun SplashScreen(
     Scaffold(
         scaffoldState = scaffoldState
     ) { innerPadding ->
-        SplashScreenContent(modifier = Modifier.padding(innerPadding),
+        SplashScreenContent(
+            modifier = Modifier.padding(innerPadding),
             onAction = onAction,
-            viewModel = viewModel)
+            viewModel = viewModel
+        )
     }
 }
 
@@ -56,7 +70,7 @@ fun SplashScreen(
 private fun SplashScreenContent(
     modifier: Modifier,
     onAction: (actions: SplashScreenActions) -> Unit,
-    viewModel: SplashViewModel
+    viewModel: SplashViewModel,
 ) {
     Column(
         modifier = modifier
@@ -65,7 +79,15 @@ private fun SplashScreenContent(
             .verticalScroll(rememberScrollState())
             .semantics { contentDescription = "Splash Screen" }
     ) {
+//        val permissionState =  rememberMultiplePermissionsState(
+//            permissions = listOf(
+//                Manifest.permission.POST_NOTIFICATIONS,
+//                Manifest.permission.CAMERA
+//            ))
+
+
         val user = viewModel.user
+        val activity = (LocalContext.current as? Activity)
         Text(
             text = "Find and shop your fashion products here.",
             style = MaterialTheme.typography.large.copy(
@@ -80,7 +102,8 @@ private fun SplashScreenContent(
         Text(text = "Welcome to our store", style = MaterialTheme.typography.small_caption)
         Image(
             modifier = Modifier
-               // .defaultMinSize(minWidth = 293.dp, minHeight = 387.dp)
+                // .defaultMinSize(minWidth = 293.dp, minHeight = 387.dp)
+                .weight(1F)
                 .align(Alignment.CenterHorizontally),
             painter = painterResource(id = R.drawable.ic_splash),
             contentDescription = null
@@ -91,15 +114,18 @@ private fun SplashScreenContent(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             contentDescription = null
         )
-//        val context = LocalContext.current
+
+        Spacer(modifier = Modifier.size(16.dp))
         Image(
             modifier = Modifier
-                .weight(1F)
+                .weight(0.25F)
                 .align(Alignment.CenterHorizontally)
                 .clickable {
 //                    throw RuntimeException("Test Crash") // Force a crash
+//                    checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, 101,  activity!!)
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { checkPermission(Manifest.permission.POST_NOTIFICATIONS, 101,  activity!!) }
                     if (user == null) onAction(SplashScreenActions.LoadLogin)
-                  else    onAction(SplashScreenActions.LoadHome)
+                    else onAction(SplashScreenActions.LoadHome)
                 },
             painter = painterResource(id = R.drawable.splash_cta),
             contentDescription = null
@@ -110,5 +136,25 @@ private fun SplashScreenContent(
 
 sealed class SplashScreenActions {
     object LoadHome : SplashScreenActions()
-   object LoadLogin : SplashScreenActions()
+    object LoadLogin : SplashScreenActions()
 }
+
+
+fun checkPermission(permission: String, requestCode: Int, activity: Activity) {
+    // on below line we are checking if the permission is denied.
+    if (ContextCompat.checkSelfPermission(
+            activity,
+            permission
+        ) == PackageManager.PERMISSION_DENIED
+    ) {
+        // if the permission is denied we are calling
+        // request permission method to request permissions.
+        ActivityCompat.requestPermissions(activity, arrayOf(permission), requestCode)
+
+    } else {
+        // this method will be called if the permissions are already granted.
+        // On below line we are displaying a toast message if permissions are granted.
+        Toast.makeText(activity, "Permission already granted..", Toast.LENGTH_SHORT).show()
+    }
+}
+
