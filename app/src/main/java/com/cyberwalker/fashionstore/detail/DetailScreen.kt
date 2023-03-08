@@ -326,8 +326,7 @@ private fun TabRow(
                 .size(30.dp)
                 .background(color = cardColorPeach, shape = CircleShape)
         ) {
-            if (selected != ColorItem.PEACH) {
-            } else {
+            if (selected == ColorItem.PEACH) {
                 Image(
                     modifier = Modifier
                         .align(Alignment.Center)
