@@ -16,9 +16,7 @@
 package com.cyberwalker.fashionstore.detail
 
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -46,6 +44,7 @@ import com.cyberwalker.fashionstore.R
 import com.cyberwalker.fashionstore.dump.vertical
 import com.cyberwalker.fashionstore.ui.theme.*
 import androidx.compose.runtime.livedata.observeAsState
+import com.cyberwalker.fashionstore.util.ColorItem
 import com.cyberwalker.fashionstore.util.showMessage
 
 @Composable
@@ -75,8 +74,11 @@ private fun DetailScreenContent(
         modifier = modifier
             .padding(horizontal = 40.dp)
             .fillMaxHeight()
+            .verticalScroll(rememberScrollState())
             .semantics { contentDescription = "Detail Screen" }
     ) {
+        val selectedColor = viewModel.selectedColor.observeAsState().value
+
         Spacer(modifier = Modifier.size(16.dp))
         ImageBox(onAction = onAction)
         Spacer(modifier = Modifier.size(24.dp))
@@ -85,7 +87,7 @@ private fun DetailScreenContent(
                 .fillMaxWidth()
                 .defaultMinSize(minHeight = 228.dp)
         ) {
-            TabRow()
+            TabRow(viewModel = viewModel,selected=selectedColor ?: ColorItem.PEACH )
             Spacer(modifier = Modifier.size(16.dp))
             ProductInfo()
         }
@@ -99,13 +101,12 @@ private fun DetailScreenContent(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-//        var selected by remember { mutableStateOf("L") }
-            val selected = viewModel.selectedSize.observeAsState().value
+            val selectedSize = viewModel.selectedSize.observeAsState().value
 
-            SizeBox(viewModel = viewModel, size = "S", selected ?: "L")
-            SizeBox(viewModel = viewModel, size = "M", selected ?: "L")
-            SizeBox(viewModel = viewModel, size = "L", selected ?: "L")
-            SizeBox(viewModel = viewModel, size = "XL", selected ?: "L")
+            SizeBox(viewModel = viewModel, size = "S", selectedSize ?: "L")
+            SizeBox(viewModel = viewModel, size = "M", selectedSize ?: "L")
+            SizeBox(viewModel = viewModel, size = "L", selectedSize ?: "L")
+            SizeBox(viewModel = viewModel, size = "XL", selectedSize ?: "L")
 //            Box(
 //                modifier = if (selected == "S")
 //                    Modifier
@@ -179,6 +180,7 @@ private fun DetailScreenContent(
 //            }
         }
         Spacer(modifier = Modifier.weight(1F))
+        Spacer(modifier = Modifier.size(16.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Column {
                 Text(text = "Price", style = MaterialTheme.typography.caption.copy(gray))
@@ -297,7 +299,10 @@ private fun ImageBox(onAction: (actions: DetailScreenActions) -> Unit) {
 }
 
 @Composable
-private fun TabRow() {
+private fun TabRow(
+    viewModel: DetailViewModel,
+    selected: ColorItem
+) {
     Row(
         modifier = Modifier
             .vertical()
@@ -306,6 +311,7 @@ private fun TabRow() {
         Spacer(
             modifier = Modifier
                 .size(30.dp)
+                .clickable { }
                 .background(color = cardColorBlue, shape = CircleShape)
         )
         Spacer(modifier = Modifier.size(16.dp))
@@ -320,13 +326,16 @@ private fun TabRow() {
                 .size(30.dp)
                 .background(color = cardColorPeach, shape = CircleShape)
         ) {
-            Image(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .rotate(90F),
-                painter = painterResource(id = R.drawable.ic_tick),
-                contentDescription = null
-            )
+            if (selected != ColorItem.PEACH) {
+            } else {
+                Image(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .rotate(90F),
+                    painter = painterResource(id = R.drawable.ic_tick),
+                    contentDescription = null
+                )
+            }
         }
         Spacer(modifier = Modifier.size(16.dp))
         Spacer(

@@ -15,25 +15,24 @@
  */
 package com.cyberwalker.fashionstore.splash
 
-import android.widget.Toast
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cyberwalker.fashionstore.R
-import com.cyberwalker.fashionstore.util.showMessage
 import com.cyberwalker.fashionstore.ui.theme.dark
 import com.cyberwalker.fashionstore.ui.theme.large
 import com.cyberwalker.fashionstore.ui.theme.small_caption
@@ -47,18 +46,26 @@ fun SplashScreen(
     Scaffold(
         scaffoldState = scaffoldState
     ) { innerPadding ->
-        SplashScreenContent(modifier = Modifier.padding(innerPadding), onAction = onAction)
+        SplashScreenContent(modifier = Modifier.padding(innerPadding),
+            onAction = onAction,
+            viewModel = viewModel)
     }
 }
 
 @Composable
-private fun SplashScreenContent(modifier: Modifier, onAction: (actions: SplashScreenActions) -> Unit) {
+private fun SplashScreenContent(
+    modifier: Modifier,
+    onAction: (actions: SplashScreenActions) -> Unit,
+    viewModel: SplashViewModel
+) {
     Column(
         modifier = modifier
             .padding(40.dp)
             .fillMaxHeight()
+            .verticalScroll(rememberScrollState())
             .semantics { contentDescription = "Splash Screen" }
     ) {
+        val user = viewModel.user
         Text(
             text = "Find and shop your fashion products here.",
             style = MaterialTheme.typography.large.copy(
@@ -73,7 +80,7 @@ private fun SplashScreenContent(modifier: Modifier, onAction: (actions: SplashSc
         Text(text = "Welcome to our store", style = MaterialTheme.typography.small_caption)
         Image(
             modifier = Modifier
-                .defaultMinSize(minWidth = 293.dp, minHeight = 387.dp)
+               // .defaultMinSize(minWidth = 293.dp, minHeight = 387.dp)
                 .align(Alignment.CenterHorizontally),
             painter = painterResource(id = R.drawable.ic_splash),
             contentDescription = null
@@ -84,22 +91,24 @@ private fun SplashScreenContent(modifier: Modifier, onAction: (actions: SplashSc
             modifier = Modifier.align(Alignment.CenterHorizontally),
             contentDescription = null
         )
-        val context = LocalContext.current
+//        val context = LocalContext.current
         Image(
             modifier = Modifier
                 .weight(1F)
-                .align(Alignment.CenterHorizontally).clickable {
-                    showMessage(context, "login here")
-                    onAction(SplashScreenActions.LoadLogin)
-//                    onAction(SplashScreenActions.LoadHome)
+                .align(Alignment.CenterHorizontally)
+                .clickable {
+//                    throw RuntimeException("Test Crash") // Force a crash
+                    if (user == null) onAction(SplashScreenActions.LoadLogin)
+                  else    onAction(SplashScreenActions.LoadHome)
                 },
             painter = painterResource(id = R.drawable.splash_cta),
             contentDescription = null
         )
+        Spacer(modifier = Modifier.size(16.dp))
     }
 }
 
 sealed class SplashScreenActions {
-   // object LoadHome : SplashScreenActions()
+    object LoadHome : SplashScreenActions()
    object LoadLogin : SplashScreenActions()
 }

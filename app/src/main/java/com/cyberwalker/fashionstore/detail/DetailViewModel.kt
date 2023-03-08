@@ -15,10 +15,14 @@
  */
 package com.cyberwalker.fashionstore.detail
 
+import android.app.Service
+import android.content.Intent
+import android.os.IBinder
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.*
+import com.cyberwalker.fashionstore.util.ColorItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -34,11 +38,24 @@ class DetailViewModel @Inject constructor(savedStateHandle: SavedStateHandle)
     private var _selectedSize: MutableLiveData<String> = MutableLiveData<String>()
     val selectedSize: LiveData<String> get() = _selectedSize
 
+    private var _selectedColor: MutableLiveData<ColorItem> = MutableLiveData<ColorItem>()
+    val selectedColor: LiveData<ColorItem> get() = _selectedColor
+
     fun setSelectedSize(selected: String){
         _selectedSize.postValue(selected)
+    }
+    fun setSelecteColor(selected: ColorItem){
+        _selectedColor.postValue(selected)
     }
 }
 
 data class DetailUiState(
     val txt: String? = null
 )
+
+class service: Service(){
+    override fun onBind(intent: Intent?): IBinder? {
+        TODO("Not yet implemented")
+    }
+
+}

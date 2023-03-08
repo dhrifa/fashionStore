@@ -71,7 +71,8 @@ private fun HomeScreenContent(
             .verticalScroll(rememberScrollState())
             .semantics { contentDescription = "Home Screen" }
     ) {
-        val loggedInUser = viewModel.loggedInUser.observeAsState().value
+        val loggedInUser = viewModel.user//
+//          val loggedInUser = viewModel.loggedInUser.observeAsState().value
         Row(
             modifier = Modifier
                 .padding(32.dp)
@@ -97,7 +98,7 @@ private fun HomeScreenContent(
             Spacer(modifier = Modifier.size(24.dp))
             Column {
                 Text(text = "Welcome", style = MaterialTheme.typography.small_caption)
-                Text(text = "Hi ${loggedInUser?.displayName}", style = MaterialTheme.typography.medium_14)
+                Text(text = "Hi ${loggedInUser?.email}", style = MaterialTheme.typography.medium_14)
             }
             Spacer(modifier = Modifier.weight(1F))
             Image(

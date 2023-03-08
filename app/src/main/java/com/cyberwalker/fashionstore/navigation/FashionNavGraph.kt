@@ -79,7 +79,7 @@ class NavActions(private val navController: NavController) {
     fun navigateToLogin(_A: SplashScreenActions) {
         navController.navigate(Screen.Login.name) {
             popUpTo(Screen.Splash.route){
-                inclusive = false
+                inclusive = true
             }
         }
 //        fun navigateToHome(_A: SplashScreenActions) {

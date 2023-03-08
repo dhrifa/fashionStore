@@ -20,6 +20,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.*
 import com.cyberwalker.fashionstore.data.source.LoggedInUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -31,13 +33,7 @@ class HomeViewModel @Inject constructor(savedStateHandle: SavedStateHandle) : Vi
     var uiState by mutableStateOf(HomeUiState())
         private set
 
-
-    private var _loggedInUser: MutableLiveData<LoggedInUser> = MutableLiveData<LoggedInUser>()
-    val loggedInUser: LiveData<LoggedInUser> get() = _loggedInUser
-
-    fun getLoggedInUser(){
-        _loggedInUser.value = LoggedInUser("","")
-    }
+    val user = Firebase.auth.currentUser
 }
 
 data class HomeUiState(

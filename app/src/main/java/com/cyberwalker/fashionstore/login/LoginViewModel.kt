@@ -20,24 +20,12 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor() : ViewModel() {
 
     val loadingState = MutableStateFlow(LoadingState.IDLE)
-    private var _loggedInUser: MutableLiveData<LoggedInUser> = MutableLiveData<LoggedInUser>()
-//    val loggedInUser: LiveData<LoggedInUser> get() = _loggedInUser
 
     fun signInWithEmailAndPassword(email: String, password: String) = viewModelScope.launch {
         try {
             loadingState.emit(LoadingState.LOADING)
             Firebase.auth.signInWithEmailAndPassword(email, password).await()
-            val user = Firebase.auth.currentUser
-            var user1 = LoggedInUser("", "")
-            setLoggedInUser(
-                user1.apply {
-                    userId = user?.uid ?: "0"
-                    displayName = user?.email ?: "Unknown"
-                }//.copy(
-//                        userId = user?.uid ?: "0"
-//                        displayName = user?.email ?: "Unknown"
-//                )
-            )
+
             loadingState.emit(LoadingState.LOADED)
         } catch (e: Exception) {
             loadingState.emit(LoadingState.error(e.localizedMessage))
@@ -55,8 +43,5 @@ class LoginViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-   private fun setLoggedInUser(_user: LoggedInUser) {
-        _loggedInUser.postValue(_user)
-    }
 
 }

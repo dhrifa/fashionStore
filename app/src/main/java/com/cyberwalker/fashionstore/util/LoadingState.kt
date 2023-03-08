@@ -20,7 +20,18 @@ data class LoadingState private constructor(val status: Status, val msg: String?
     }
 }
 
-
+enum class ColorItem {
+    BLUE,
+    GREEN,
+    PEACH,
+    YELLOW,
+}
+enum class SizeItem {
+    S,
+    M,
+    L,
+    XL,
+}
 
 fun showMessage(context: Context, message:String){
     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()

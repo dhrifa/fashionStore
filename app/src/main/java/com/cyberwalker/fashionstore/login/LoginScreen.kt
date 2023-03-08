@@ -4,7 +4,9 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MailOutline
@@ -58,6 +60,7 @@ private fun LoginScreenContent(
         modifier = modifier
             .padding(horizontal = 40.dp)
             .fillMaxHeight()
+            .verticalScroll(rememberScrollState())
             .semantics { contentDescription = "Login Screen" }) {
 
         var email by remember { mutableStateOf("") }
