@@ -20,12 +20,12 @@ data class LoadingState private constructor(val status: Status, val msg: String?
     }
 }
 
-enum class ColorItem {
-    BLUE,
-    GREEN,
-    PEACH,
-    YELLOW,
-}
+//enum class ColorItem {
+//    BLUE,
+//    GREEN,
+//    PEACH,
+//    YELLOW,
+//}
 enum class SizeItem {
     S,
     M,

@@ -21,31 +21,67 @@ import android.os.IBinder
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.*
-import com.cyberwalker.fashionstore.util.ColorItem
+import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import com.cyberwalker.fashionstore.data.*
+import com.cyberwalker.fashionstore.ui.theme.cardColorBlue
+import com.cyberwalker.fashionstore.ui.theme.cardColorGreen
+import com.cyberwalker.fashionstore.ui.theme.cardColorPeach
+import com.cyberwalker.fashionstore.ui.theme.cardColorYellow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class DetailViewModel @Inject constructor(savedStateHandle: SavedStateHandle)
-    : ViewModel() {
+class DetailViewModel @Inject constructor(savedStateHandle: SavedStateHandle) : ViewModel() {
 
     var uiState by mutableStateOf(DetailUiState())
         private set
 
+    private var _item: MutableLiveData<Item> = MutableLiveData<Item>()
+    val item: LiveData<Item> get() = _item
+
+    private var _sizeItem: MutableLiveData<SizeItem> = MutableLiveData<SizeItem>()
+    val sizeItem: LiveData<SizeItem> get() = _sizeItem
+
+    private var _colorItem: MutableLiveData<ColorItem> = MutableLiveData<ColorItem>()
+    val colorItem: LiveData<ColorItem> get() = _colorItem
+
     private var _selectedSize: MutableLiveData<String> = MutableLiveData<String>()
     val selectedSize: LiveData<String> get() = _selectedSize
 
-    private var _selectedColor: MutableLiveData<ColorItem> = MutableLiveData<ColorItem>()
-    val selectedColor: LiveData<ColorItem> get() = _selectedColor
+    private var _selectedColor: MutableLiveData<Color> = MutableLiveData<Color>()
+    val selectedColor: LiveData<Color> get() = _selectedColor
 
-    fun setSelectedSize(selected: String){
+    fun setSelectedSize(selected: String) {
         _selectedSize.postValue(selected)
     }
-    fun setSelecteColor(selected: ColorItem){
+
+    fun setSelecteColor(selected: Color) {
         _selectedColor.postValue(selected)
+    }
+
+    fun setSizeItem(size: String) {
+        when (size) {
+            "S" -> _sizeItem.postValue(sizeS)
+            "M" -> _sizeItem.postValue(sizeM)
+            "L" -> _sizeItem.postValue(sizeL)
+            "XL" -> _sizeItem.postValue(sizeXL)
+        }
+    }
+    fun getColorItem(color: Color) {
+        when (color) {
+            cardColorGreen -> _colorItem.postValue(itemGreen)
+            cardColorBlue -> _colorItem.postValue(itemBlue)
+            cardColorPeach -> _colorItem.postValue(itemPeach)
+            cardColorYellow -> _colorItem.postValue(itemYellow)
+        }
+    }
+
+    fun setItem(item: Item){
+        _item.postValue(item)
     }
 }
 
@@ -53,7 +89,7 @@ data class DetailUiState(
     val txt: String? = null
 )
 
-class service: Service(){
+class service : Service() {
     override fun onBind(intent: Intent?): IBinder? {
         TODO("Not yet implemented")
     }

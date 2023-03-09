@@ -44,7 +44,7 @@ import com.cyberwalker.fashionstore.R
 import com.cyberwalker.fashionstore.dump.vertical
 import com.cyberwalker.fashionstore.ui.theme.*
 import androidx.compose.runtime.livedata.observeAsState
-import com.cyberwalker.fashionstore.util.ColorItem
+import com.cyberwalker.fashionstore.data.*
 import com.cyberwalker.fashionstore.util.showMessage
 
 @Composable
@@ -77,7 +77,9 @@ private fun DetailScreenContent(
             .verticalScroll(rememberScrollState())
             .semantics { contentDescription = "Detail Screen" }
     ) {
-        val selectedColor = viewModel.selectedColor.observeAsState().value
+        val selectedItem = viewModel.item.observeAsState().value
+        val selectedColorItem = viewModel.selectedColor.observeAsState().value
+        val selectedSizeItem  = viewModel.sizeItem.observeAsState().value
 
         Spacer(modifier = Modifier.size(16.dp))
         ImageBox(onAction = onAction)
@@ -87,9 +89,13 @@ private fun DetailScreenContent(
                 .fillMaxWidth()
                 .defaultMinSize(minHeight = 228.dp)
         ) {
-            TabRow(viewModel = viewModel,selected=selectedColor ?: ColorItem.PEACH )
+            TabRow(
+                viewModel = viewModel,
+                selectedColor = selectedColorItem ?: cardColorPeach,
+//                colorItem
+            )// ColorItem.PEACH)
             Spacer(modifier = Modifier.size(16.dp))
-            ProductInfo()
+            ProductInfo(selectedItem ?: item1)
         }
         Spacer(modifier = Modifier.size(16.dp))
         Text(text = "Size", style = MaterialTheme.typography.medium_18)
@@ -101,83 +107,10 @@ private fun DetailScreenContent(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val selectedSize = viewModel.selectedSize.observeAsState().value
-
-            SizeBox(viewModel = viewModel, size = "S", selectedSize ?: "L")
-            SizeBox(viewModel = viewModel, size = "M", selectedSize ?: "L")
-            SizeBox(viewModel = viewModel, size = "L", selectedSize ?: "L")
-            SizeBox(viewModel = viewModel, size = "XL", selectedSize ?: "L")
-//            Box(
-//                modifier = if (selected == "S")
-//                    Modifier
-//                        .size(56.dp)
-//                        .clip(RoundedCornerShape(12.dp))
-//                        .background(color = highlight, shape = RoundedCornerShape(12.dp))
-//                        .clickable { selected = "S" }
-//                else
-//                    Modifier
-//                        .size(45.dp)
-//                        .clip(RoundedCornerShape(12.dp))
-//                        .background(color = sizeGreen, shape = RoundedCornerShape(12.dp))
-//                        .clickable { selected = "S" },
-//                contentAlignment = Alignment.Center
-//            ) {
-//                Text(
-//                    text = "S",
-//                    style = MaterialTheme.typography.medium_18_bold
-//                        .copy(if (selected == "S") Color.White else dark)
-//                )
-//            }
-//            Box(
-//                modifier = Modifier
-//                    .size(if (selected == "M") 56.dp else 45.dp)
-//                    .clip(RoundedCornerShape(12.dp))
-//                    .background(
-//                        color = if (selected == "M") highlight else sizeGreen,
-//                        shape = RoundedCornerShape(12.dp)
-//                    )
-//                    .clickable { selected = "M" },
-//                contentAlignment = Alignment.Center
-//            ) {
-//                Text(
-//                    text = "M", style = MaterialTheme.typography.medium_18_bold
-//                        .copy(if (selected == "M") Color.White else dark)
-//                )
-//            }
-//            Box(
-//                modifier = Modifier
-//                    .size(if (selected == "L") 56.dp else 45.dp)
-//                    .clip(RoundedCornerShape(12.dp))
-//                    .background(
-//                        color = if (selected == "L") highlight else sizeGreen,
-//                        shape = RoundedCornerShape(12.dp)
-//                    )
-//                    .clickable { viewModel.setSelectedSize( "L") },
-//                contentAlignment = Alignment.Center
-//            ) {
-//                Text(
-//                    text = "L",
-//                    style = MaterialTheme.typography.medium_18_bold
-//                        .copy(if (selected == "L") Color.White else dark)
-//                )
-//            }
-//            Box(
-//                modifier = Modifier
-//                    .size(if (selected == "XL") 56.dp else 45.dp)
-//                    .clip(RoundedCornerShape(12.dp))
-//                    .background(
-//                        color = if (selected == "XL") highlight else sizeGreen,
-//                        shape = RoundedCornerShape(12.dp)
-//                    )
-//                    .clickable { viewModel.setSelectedSize("XL") },
-//                contentAlignment = Alignment.Center
-//            ) {
-//                Text(
-//                    text = "XL",
-//                    style = MaterialTheme.typography.medium_18_bold
-//                        .copy(if (selected == "XL") Color.White else dark)
-//                )
-//            }
+            SizeBox(viewModel = viewModel, sizeItem =  sizeS , selectedSizeItem?._size ?: "L")
+            SizeBox(viewModel = viewModel, sizeItem = sizeM , selectedSizeItem?._size ?: "L")
+            SizeBox(viewModel = viewModel, sizeItem = sizeL, selectedSizeItem?._size ?: "L")
+            SizeBox(viewModel = viewModel, sizeItem = sizeXL, selectedSizeItem?._size ?: "L")
         }
         Spacer(modifier = Modifier.weight(1F))
         Spacer(modifier = Modifier.size(16.dp))
@@ -185,7 +118,8 @@ private fun DetailScreenContent(
             Column {
                 Text(text = "Price", style = MaterialTheme.typography.caption.copy(gray))
                 Spacer(modifier = Modifier.size(4.dp))
-                Text(text = "₹1284", style = MaterialTheme.typography.medium_18)
+//                Text(text = "₹1284", style = MaterialTheme.typography.medium_18)
+                Text(text = selectedSizeItem?._price ?: "none", style = MaterialTheme.typography.medium_18)
             }
             Button(
                 onClick = { },
@@ -209,7 +143,9 @@ private fun DetailScreenContent(
 }
 
 @Composable
-fun ProductInfo() {
+fun ProductInfo(
+    item: Item
+) {
     Column() {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -301,75 +237,51 @@ private fun ImageBox(onAction: (actions: DetailScreenActions) -> Unit) {
 @Composable
 private fun TabRow(
     viewModel: DetailViewModel,
-    selected: ColorItem
+    selectedColor: Color//Item
 ) {
     Row(
         modifier = Modifier
             .vertical()
             .rotate(-90F), verticalAlignment = Alignment.CenterVertically
     ) {
-        Spacer(
-            modifier = Modifier
-                .size(30.dp)
-                .clickable { }
-                .background(color = cardColorBlue, shape = CircleShape)
-        )
+
+        ColorBox(viewModel = viewModel, colorItem = cardColorGreen, selected = selectedColor)
         Spacer(modifier = Modifier.size(16.dp))
-        Spacer(
-            modifier = Modifier
-                .size(30.dp)
-                .background(color = cardColorGreen, shape = CircleShape)
-        )
+        ColorBox(viewModel = viewModel, colorItem = cardColorBlue, selected = selectedColor)
         Spacer(modifier = Modifier.size(16.dp))
-        Box(
-            modifier = Modifier
-                .size(30.dp)
-                .background(color = cardColorPeach, shape = CircleShape)
-        ) {
-            if (selected == ColorItem.PEACH) {
-                Image(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .rotate(90F),
-                    painter = painterResource(id = R.drawable.ic_tick),
-                    contentDescription = null
-                )
-            }
-        }
+        ColorBox(viewModel = viewModel, colorItem = cardColorPeach, selected = selectedColor)
         Spacer(modifier = Modifier.size(16.dp))
-        Spacer(
-            modifier = Modifier
-                .size(30.dp)
-                .background(color = cardColorYellow, shape = CircleShape)
-        )
+        ColorBox(viewModel = viewModel, colorItem = cardColorYellow, selected = selectedColor)
     }
 }
 
 @Composable
 private fun SizeBox(
     viewModel: DetailViewModel,
-    size: String,
-    selected: String,
-) {
+    sizeItem: SizeItem,// String,
+    selectedSize: String,
+
+    ) {
     val context = LocalContext.current
     Box(
-        modifier = if (selected == size)
+        modifier = if (selectedSize == sizeItem._size)
             modifierSelected.clickable {
-                viewModel.setSelectedSize(size)
-                showMessage(context, "size box $size")
+                viewModel.setSelectedSize(sizeItem._size)
+//                showMessage(context, "size box $size")
             }
         else
             modifierUnselected.clickable {
-                viewModel.setSelectedSize(size)
-                showMessage(context, "size box $size selected $selected")
+                viewModel.setSizeItem(sizeItem._size)
+//                viewModel.setSelectedSize(size._size)
+//                showMessage(context, "size box $size selected $selected")
             },
 
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = size,
+            text = sizeItem._size,
             style = MaterialTheme.typography.medium_18_bold
-                .copy(if (selected == size) Color.White else dark)
+                .copy(if (selectedSize == sizeItem._size) Color.White else dark)
         )
     }
 }
@@ -384,6 +296,32 @@ val modifierUnselected = Modifier
     .clip(RoundedCornerShape(12.dp))
     .background(color = sizeGreen, shape = RoundedCornerShape(12.dp))
 
+@Composable
+fun ColorBox(
+    viewModel: DetailViewModel,
+    colorItem: Color,
+    selected: Color,// ColorItem,
+) {
+    Box(
+        modifier = Modifier
+            .size(30.dp)
+            .clickable {
+                viewModel.setSelecteColor(colorItem)
+            }
+            .background(color = colorItem, shape = CircleShape)
+    ) {
+        if (selected == colorItem) {
+            Image(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .rotate(90F),
+                painter = painterResource(id = R.drawable.ic_tick),
+                contentDescription = null
+            )
+        }
+        // Spacer(modifier = Modifier.size(16.dp))
+    }
+}
 
 sealed class DetailScreenActions {
     object Back : DetailScreenActions()
