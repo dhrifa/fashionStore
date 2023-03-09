@@ -34,10 +34,10 @@ val sizeXL: SizeItem = SizeItem("Sbm T-Shirt", "XL","$220")
 
 val sizesItem = listOf(sizeS, sizeM, sizeL, sizeXL)
 
-val itemGreen=ColorItem(_item = "Sbm T-Shirt", _color=cardColorGreen, _colorTitle = "Green", _image = "")
-val itemBlue=ColorItem(_item = "Sbm T-Shirt", _color=cardColorBlue, _colorTitle = "Blue", _image = "")
+val itemGreen=ColorItem(_item = "Sbm T-Shirt", _color=cardColorGreen, _colorTitle = "Green", _image = "https://http.cat/100")
+val itemBlue=ColorItem(_item = "Sbm T-Shirt", _color=cardColorBlue, _colorTitle = "Blue", _image = "https://http.cat/101")
 val itemPeach=ColorItem(_item = "Sbm T-Shirt", _color= cardColorPeach, _colorTitle = "Modern Peach", _image = "")
-val itemYellow=ColorItem(_item = "Sbm T-Shirt", _color= cardColorYellow, _colorTitle = "Yellow", _image = "")
+val itemYellow=ColorItem(_item = "Sbm T-Shirt", _color= cardColorYellow, _colorTitle = "Yellow", _image = "https://http.cat/103")
 
 val colorsItem = listOf(itemBlue, itemGreen, itemPeach, itemYellow)
 
