@@ -78,7 +78,7 @@ private fun DetailScreenContent(
             .semantics { contentDescription = "Detail Screen" }
     ) {
         val selectedItem = viewModel.item.observeAsState().value
-        val selectedColorItem = viewModel.selectedColor.observeAsState().value
+        val selectedColorItem = viewModel.colorItem.observeAsState().value
         val selectedSizeItem  = viewModel.sizeItem.observeAsState().value
 
         Spacer(modifier = Modifier.size(16.dp))
@@ -91,11 +91,11 @@ private fun DetailScreenContent(
         ) {
             TabRow(
                 viewModel = viewModel,
-                selectedColor = selectedColorItem ?: cardColorPeach,
+                selectedColor = selectedColorItem ?: itemPeach,
 //                colorItem
             )// ColorItem.PEACH)
             Spacer(modifier = Modifier.size(16.dp))
-            ProductInfo(selectedItem ?: item1)
+            ProductInfo(selectedItem ?: item1, selectedColorItem ?: itemPeach)
         }
         Spacer(modifier = Modifier.size(16.dp))
         Text(text = "Size", style = MaterialTheme.typography.medium_18)
@@ -118,8 +118,7 @@ private fun DetailScreenContent(
             Column {
                 Text(text = "Price", style = MaterialTheme.typography.caption.copy(gray))
                 Spacer(modifier = Modifier.size(4.dp))
-//                Text(text = "₹1284", style = MaterialTheme.typography.medium_18)
-                Text(text = selectedSizeItem?._price ?: "none", style = MaterialTheme.typography.medium_18)
+                Text(text = selectedSizeItem?._price ?: sizeL._price, style = MaterialTheme.typography.medium_18)
             }
             Button(
                 onClick = { },
@@ -144,7 +143,8 @@ private fun DetailScreenContent(
 
 @Composable
 fun ProductInfo(
-    item: Item
+    item: Item,
+    colorItem: ColorItem,
 ) {
     Column() {
         Row(
@@ -159,7 +159,8 @@ fun ProductInfo(
                 Image(painter = painterResource(id = R.drawable.icstar), contentDescription = null)
             }
         }
-        Text(text = "Modern Peach", style = MaterialTheme.typography.small_caption2)
+//        Text(text = "Modern Peach", style = MaterialTheme.typography.small_caption2)
+        Text(text = colorItem._colorTitle, style = MaterialTheme.typography.small_caption2)
         Spacer(modifier = Modifier.size(16.dp))
         Text(
             text = textWithLink,
@@ -237,43 +238,38 @@ private fun ImageBox(onAction: (actions: DetailScreenActions) -> Unit) {
 @Composable
 private fun TabRow(
     viewModel: DetailViewModel,
-    selectedColor: Color//Item
+    selectedColor: ColorItem// Color
 ) {
     Row(
         modifier = Modifier
             .vertical()
             .rotate(-90F), verticalAlignment = Alignment.CenterVertically
     ) {
-
-        ColorBox(viewModel = viewModel, colorItem = cardColorGreen, selected = selectedColor)
+        ColorBox(viewModel = viewModel, colorItem = itemGreen, selected = selectedColor._color )
         Spacer(modifier = Modifier.size(16.dp))
-        ColorBox(viewModel = viewModel, colorItem = cardColorBlue, selected = selectedColor)
+        ColorBox(viewModel = viewModel, colorItem = itemBlue, selected = selectedColor._color)
         Spacer(modifier = Modifier.size(16.dp))
-        ColorBox(viewModel = viewModel, colorItem = cardColorPeach, selected = selectedColor)
+        ColorBox(viewModel = viewModel, colorItem = itemPeach, selected = selectedColor._color)
         Spacer(modifier = Modifier.size(16.dp))
-        ColorBox(viewModel = viewModel, colorItem = cardColorYellow, selected = selectedColor)
+        ColorBox(viewModel = viewModel, colorItem = itemYellow, selected = selectedColor._color)
     }
 }
 
 @Composable
 private fun SizeBox(
     viewModel: DetailViewModel,
-    sizeItem: SizeItem,// String,
+    sizeItem: SizeItem,
     selectedSize: String,
-
     ) {
-    val context = LocalContext.current
+//    val context = LocalContext.current
     Box(
         modifier = if (selectedSize == sizeItem._size)
             modifierSelected.clickable {
-                viewModel.setSelectedSize(sizeItem._size)
-//                showMessage(context, "size box $size")
+                viewModel.setSizeItem(sizeItem._size)
             }
         else
             modifierUnselected.clickable {
                 viewModel.setSizeItem(sizeItem._size)
-//                viewModel.setSelectedSize(size._size)
-//                showMessage(context, "size box $size selected $selected")
             },
 
         contentAlignment = Alignment.Center
@@ -299,18 +295,19 @@ val modifierUnselected = Modifier
 @Composable
 fun ColorBox(
     viewModel: DetailViewModel,
-    colorItem: Color,
+    colorItem: ColorItem,// Color,
     selected: Color,// ColorItem,
 ) {
     Box(
         modifier = Modifier
             .size(30.dp)
             .clickable {
-                viewModel.setSelecteColor(colorItem)
+//                viewModel.setSelecteColor(colorItem)
+                viewModel.setColorItem(colorItem._color)
             }
-            .background(color = colorItem, shape = CircleShape)
+            .background(color = colorItem._color, shape = CircleShape)
     ) {
-        if (selected == colorItem) {
+        if (selected == colorItem._color) {
             Image(
                 modifier = Modifier
                     .align(Alignment.Center)

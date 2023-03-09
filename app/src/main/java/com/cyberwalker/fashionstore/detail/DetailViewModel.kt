@@ -49,20 +49,6 @@ class DetailViewModel @Inject constructor(savedStateHandle: SavedStateHandle) : 
     private var _colorItem: MutableLiveData<ColorItem> = MutableLiveData<ColorItem>()
     val colorItem: LiveData<ColorItem> get() = _colorItem
 
-    private var _selectedSize: MutableLiveData<String> = MutableLiveData<String>()
-    val selectedSize: LiveData<String> get() = _selectedSize
-
-    private var _selectedColor: MutableLiveData<Color> = MutableLiveData<Color>()
-    val selectedColor: LiveData<Color> get() = _selectedColor
-
-    fun setSelectedSize(selected: String) {
-        _selectedSize.postValue(selected)
-    }
-
-    fun setSelecteColor(selected: Color) {
-        _selectedColor.postValue(selected)
-    }
-
     fun setSizeItem(size: String) {
         when (size) {
             "S" -> _sizeItem.postValue(sizeS)
@@ -71,7 +57,7 @@ class DetailViewModel @Inject constructor(savedStateHandle: SavedStateHandle) : 
             "XL" -> _sizeItem.postValue(sizeXL)
         }
     }
-    fun getColorItem(color: Color) {
+    fun setColorItem(color: Color) {
         when (color) {
             cardColorGreen -> _colorItem.postValue(itemGreen)
             cardColorBlue -> _colorItem.postValue(itemBlue)
