@@ -15,32 +15,36 @@
  */
 package com.cyberwalker.fashionstore.home
 
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ProvidedValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImagePainter.State.Empty.painter
 import com.cyberwalker.fashionstore.R
 import com.cyberwalker.fashionstore.dump.BottomNav
 import com.cyberwalker.fashionstore.dump.vertical
 import com.cyberwalker.fashionstore.ui.theme.*
 import com.cyberwalker.fashionstore.util.showMessage
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
@@ -49,21 +53,61 @@ fun HomeScreen(
     onAction: (actions: HomeScreenActions) -> Unit,
     navController: NavHostController
 ) {
+    val scaffoldState = rememberScaffoldState()
+    val scope = rememberCoroutineScope()
+
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val openDrawer = {
+        scope.launch {
+            drawerState.open()
+        }
+    }
+
     Scaffold(
         scaffoldState = scaffoldState,
+            drawerContent = {
+                // Drawer content
+                //CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl )
+                Drawer(modifier = Modifier) {}
+            }
+        ,
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                modifier = Modifier
+                    .padding(all = 16.dp),
+//                    .align(alignment = Alignment.BottomEnd),
+                text = { Text("Open or close drawer") },
+                onClick = {
+                    scope.launch {
+                        scaffoldState.drawerState.apply {
+                            if (isClosed) open() else close()
+                        }
+                    }
+                }
+            )
+        }
+,
         bottomBar = {
             BottomNav(navController = navController)
         }
     ) { innerPadding ->
-        HomeScreenContent(viewModel=viewModel, modifier = Modifier.padding(innerPadding), onAction = onAction)
+        HomeScreenContent(
+            viewModel=viewModel,
+            modifier = Modifier.padding(innerPadding),
+            onAction = onAction,
+            scope = scope
+        )
     }
 }
+
+
 
 @Composable
 private fun HomeScreenContent(
     viewModel: HomeViewModel,
     modifier: Modifier,
     onAction: (actions: HomeScreenActions) -> Unit,
+    scope: Any,
 ) {
     Column(
         modifier = modifier
@@ -71,8 +115,7 @@ private fun HomeScreenContent(
             .verticalScroll(rememberScrollState())
             .semantics { contentDescription = "Home Screen" }
     ) {
-        val loggedInUser = viewModel.user//
-//          val loggedInUser = viewModel.loggedInUser.observeAsState().value
+        val loggedInUser = viewModel.user
         Row(
             modifier = Modifier
                 .padding(32.dp)
@@ -106,6 +149,11 @@ private fun HomeScreenContent(
                     .size(50.dp)
                     .clickable {
                       showMessage(context, "Drawer cliqued")
+//                        if (isClosed) open() else close()
+//                        scope.launch {
+//                            scaffoldState.drawerState.apply {
+//                                if (isClosed) open() else close()
+//                            }
                     }
                     .padding(12.dp),
                 painter = painterResource(id = R.drawable.menu_bar),
@@ -241,7 +289,8 @@ private fun GridOfImages(onAction: (actions: HomeScreenActions) -> Unit,) {
                     contentDescription = null,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(end = 8.dp, top = 8.dp).clickable {  }
+                        .padding(end = 8.dp, top = 8.dp)
+                        .clickable { }
                 )
             }
             Spacer(modifier = Modifier.size(8.dp))
@@ -270,7 +319,8 @@ private fun GridOfImages(onAction: (actions: HomeScreenActions) -> Unit,) {
                     contentDescription = null,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(end = 8.dp, top = 8.dp).clickable {  }
+                        .padding(end = 8.dp, top = 8.dp)
+                        .clickable { }
                 )
             }
             Spacer(modifier = Modifier.size(8.dp))
@@ -301,7 +351,8 @@ private fun GridOfImages(onAction: (actions: HomeScreenActions) -> Unit,) {
                     contentDescription = null,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(end = 8.dp, top = 8.dp).clickable {  }
+                        .padding(end = 8.dp, top = 8.dp)
+                        .clickable { }
                 )
             }
             Spacer(modifier = Modifier.size(8.dp))
@@ -330,7 +381,8 @@ private fun GridOfImages(onAction: (actions: HomeScreenActions) -> Unit,) {
                     contentDescription = null,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(end = 8.dp, top = 8.dp).clickable {  }
+                        .padding(end = 8.dp, top = 8.dp)
+                        .clickable { }
                 )
             }
             Spacer(modifier = Modifier.size(8.dp))

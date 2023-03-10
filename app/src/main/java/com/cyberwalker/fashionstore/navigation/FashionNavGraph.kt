@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.cyberwalker.fashionstore.data.item1
 import com.cyberwalker.fashionstore.detail.DetailScreen
 import com.cyberwalker.fashionstore.detail.DetailScreenActions
 import com.cyberwalker.fashionstore.dump.animatedComposable
@@ -70,7 +71,7 @@ fun FashionNavGraph(
         }
 
         animatedComposable(Screen.Detail.route) {
-            DetailScreen(onAction = actions::navigateFromDetails)
+            DetailScreen(onAction = actions::navigateFromDetails/*, item = item1*/)
         }
     }
 }

@@ -44,6 +44,9 @@ import com.cyberwalker.fashionstore.R
 import com.cyberwalker.fashionstore.dump.vertical
 import com.cyberwalker.fashionstore.ui.theme.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 import com.cyberwalker.fashionstore.data.*
 import com.cyberwalker.fashionstore.util.showMessage
 
@@ -51,6 +54,7 @@ import com.cyberwalker.fashionstore.util.showMessage
 fun DetailScreen(
     viewModel: DetailViewModel = hiltViewModel(),
     scaffoldState: ScaffoldState = rememberScaffoldState(),
+    // item: Item,
     onAction: (actions: DetailScreenActions) -> Unit
 ) {
     Scaffold(
@@ -79,10 +83,15 @@ private fun DetailScreenContent(
     ) {
         val selectedItem = viewModel.item.observeAsState().value
         val selectedColorItem = viewModel.colorItem.observeAsState().value
-        val selectedSizeItem  = viewModel.sizeItem.observeAsState().value
+        val selectedSizeItem = viewModel.sizeItem.observeAsState().value
 
         Spacer(modifier = Modifier.size(16.dp))
-        ImageBox(onAction = onAction)
+        ImageBox(
+            onAction = onAction,
+            selectedColor = selectedColorItem ?: itemPeach,
+            viewModel = viewModel,
+            isFavorite = selectedItem?._isFavorite ?: false
+        )
         Spacer(modifier = Modifier.size(24.dp))
         Row(
             modifier = Modifier
@@ -107,8 +116,8 @@ private fun DetailScreenContent(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            SizeBox(viewModel = viewModel, sizeItem =  sizeS , selectedSizeItem?._size ?: "L")
-            SizeBox(viewModel = viewModel, sizeItem = sizeM , selectedSizeItem?._size ?: "L")
+            SizeBox(viewModel = viewModel, sizeItem = sizeS, selectedSizeItem?._size ?: "L")
+            SizeBox(viewModel = viewModel, sizeItem = sizeM, selectedSizeItem?._size ?: "L")
             SizeBox(viewModel = viewModel, sizeItem = sizeL, selectedSizeItem?._size ?: "L")
             SizeBox(viewModel = viewModel, sizeItem = sizeXL, selectedSizeItem?._size ?: "L")
         }
@@ -118,7 +127,10 @@ private fun DetailScreenContent(
             Column {
                 Text(text = "Price", style = MaterialTheme.typography.caption.copy(gray))
                 Spacer(modifier = Modifier.size(4.dp))
-                Text(text = selectedSizeItem?._price ?: sizeL._price, style = MaterialTheme.typography.medium_18)
+                Text(
+                    text = selectedSizeItem?._price ?: sizeL._price,
+                    style = MaterialTheme.typography.medium_18
+                )
             }
             Button(
                 onClick = { },
@@ -152,9 +164,10 @@ fun ProductInfo(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Sbm T-Shirt", style = MaterialTheme.typography.medium_18)
+//            Text(text = "Sbm T-Shirt", style = MaterialTheme.typography.medium_18)
+            Text(text = item._title, style = MaterialTheme.typography.medium_18)
             Row {
-                Text(text = "5/5", style = MaterialTheme.typography.medium_18)
+                Text(text = item._rating, style = MaterialTheme.typography.medium_18)
                 Spacer(modifier = Modifier.size(8.dp))
                 Image(painter = painterResource(id = R.drawable.icstar), contentDescription = null)
             }
@@ -163,7 +176,7 @@ fun ProductInfo(
         Text(text = colorItem._colorTitle, style = MaterialTheme.typography.small_caption2)
         Spacer(modifier = Modifier.size(16.dp))
         Text(
-            text = textWithLink,
+            text = "${item._description}  $textWithLink",
             style = MaterialTheme.typography.small_caption.copy(color = gray)
         )
         Spacer(modifier = Modifier.size(16.dp))
@@ -201,7 +214,12 @@ val productInfo = listOf(
 val paragraphStyle = ParagraphStyle(textIndent = TextIndent())
 
 @Composable
-private fun ImageBox(onAction: (actions: DetailScreenActions) -> Unit) {
+private fun ImageBox(
+    viewModel: DetailViewModel,
+    isFavorite: Boolean,
+    selectedColor: ColorItem,
+    onAction: (actions: DetailScreenActions) -> Unit
+) {
     Box(
         modifier = Modifier
             .defaultMinSize(minHeight = 310.dp)
@@ -209,6 +227,7 @@ private fun ImageBox(onAction: (actions: DetailScreenActions) -> Unit) {
             .background(color = cardColorBlue, shape = RoundedCornerShape(16.dp))
     ) {
         val context = LocalContext.current
+        var isFavorite = rememberSaveable { mutableStateOf(isFavorite) }
         Image(
             modifier = Modifier
                 .align(Alignment.TopStart)
@@ -221,16 +240,34 @@ private fun ImageBox(onAction: (actions: DetailScreenActions) -> Unit) {
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(end = 16.dp, top = 16.dp)
-                .clickable { showMessage(context, "favorite") },
-            painter = painterResource(id = R.drawable.ic_heart_filled),
+                .clickable {
+                    showMessage(context, "favorite")
+                    isFavorite.value = !isFavorite.value
+                    viewModel.setIsFavorite(!isFavorite.value)
+                },
+            painter = painterResource(id = if (isFavorite.value) R.drawable.ic_heart_red else R.drawable.ic_heart_filled),
             contentDescription = null
         )
-        Image(
+//        Image(
+//            modifier = Modifier
+//                .defaultMinSize(minWidth = 287.dp, minHeight = 335.dp)
+//                .align(Alignment.BottomCenter),
+//            painter = painterResource(id = R.drawable.ic_girl),//how to make it dynamic
+//            contentDescription = null
+//        )
+
+        AsyncImage(
+            model = selectedColor?._image,
+//            ImageRequest.Builder(LocalContext.current)
+//                .data(student.image)
+//                .crossfade(true)
+//                .build(),//
+            contentDescription = selectedColor._colorTitle,
+            //contentScale = ContentScale.Crop,
+            placeholder = painterResource(R.drawable.ic_girl),
             modifier = Modifier
                 .defaultMinSize(minWidth = 287.dp, minHeight = 335.dp)
                 .align(Alignment.BottomCenter),
-            painter = painterResource(id = R.drawable.ic_girl),//how to make it dynamic
-            contentDescription = null
         )
     }
 }
@@ -245,7 +282,7 @@ private fun TabRow(
             .vertical()
             .rotate(-90F), verticalAlignment = Alignment.CenterVertically
     ) {
-        ColorBox(viewModel = viewModel, colorItem = itemGreen, selected = selectedColor._color )
+        ColorBox(viewModel = viewModel, colorItem = itemGreen, selected = selectedColor._color)
         Spacer(modifier = Modifier.size(16.dp))
         ColorBox(viewModel = viewModel, colorItem = itemBlue, selected = selectedColor._color)
         Spacer(modifier = Modifier.size(16.dp))
@@ -260,7 +297,7 @@ private fun SizeBox(
     viewModel: DetailViewModel,
     sizeItem: SizeItem,
     selectedSize: String,
-    ) {
+) {
 //    val context = LocalContext.current
     Box(
         modifier = if (selectedSize == sizeItem._size)

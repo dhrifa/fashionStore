@@ -49,6 +49,13 @@ class DetailViewModel @Inject constructor(savedStateHandle: SavedStateHandle) : 
     private var _colorItem: MutableLiveData<ColorItem> = MutableLiveData<ColorItem>()
     val colorItem: LiveData<ColorItem> get() = _colorItem
 
+    private var _isFavorite: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
+    val isFavorite: LiveData<Boolean> get() = _isFavorite
+
+    fun setIsFavorite(isFavorite: Boolean){
+        _isFavorite.postValue(isFavorite)
+    }
+
     fun setSizeItem(size: String) {
         when (size) {
             "S" -> _sizeItem.postValue(sizeS)
