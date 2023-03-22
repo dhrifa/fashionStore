@@ -58,7 +58,7 @@ fun DetailScreen(
     onAction: (actions: DetailScreenActions) -> Unit
 ) {
     Scaffold(
-        scaffoldState = scaffoldState
+        scaffoldState = scaffoldState,
     ) { innerPadding ->
         DetailScreenContent(
             modifier = Modifier.padding(innerPadding),
@@ -228,14 +228,15 @@ private fun ImageBox(
     ) {
         val context = LocalContext.current
         var isFavorite = rememberSaveable { mutableStateOf(isFavorite) }
-        Image(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(start = 16.dp, top = 16.dp)
-                .clickable { onAction(DetailScreenActions.Back) },
-            painter = painterResource(id = R.drawable.ic_back),
-            contentDescription = null
-        )
+
+            Image(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(start = 16.dp, top = 16.dp)
+                    .clickable { onAction(DetailScreenActions.Back) },
+                painter = painterResource(id = R.drawable.ic_back),
+                contentDescription = null
+            )
         Image(
             modifier = Modifier
                 .align(Alignment.TopEnd)
@@ -243,7 +244,7 @@ private fun ImageBox(
                 .clickable {
                     showMessage(context, "favorite")
                     isFavorite.value = !isFavorite.value
-                    viewModel.setIsFavorite(!isFavorite.value)
+                    viewModel.setIsFavorite(isFavorite.value)
                 },
             painter = painterResource(id = if (isFavorite.value) R.drawable.ic_heart_red else R.drawable.ic_heart_filled),
             contentDescription = null
@@ -262,9 +263,9 @@ private fun ImageBox(
 //                .data(student.image)
 //                .crossfade(true)
 //                .build(),//
-            contentDescription = selectedColor._colorTitle,
-            //contentScale = ContentScale.Crop,
-            placeholder = painterResource(R.drawable.ic_girl),
+            contentDescription =  selectedColor._colorTitle,
+            contentScale = ContentScale.FillWidth,
+//            placeholder = painterResource(R.drawable.ic_girl),
             modifier = Modifier
                 .defaultMinSize(minWidth = 287.dp, minHeight = 335.dp)
                 .align(Alignment.BottomCenter),

@@ -11,6 +11,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImagePainter.State.Empty.painter
 import com.cyberwalker.fashionstore.R
 import com.cyberwalker.fashionstore.ui.theme.FashionStoreTheme
 
@@ -37,7 +38,7 @@ fun Drawer(
             .fillMaxSize()
             .padding(start = 24.dp, top = 48.dp)
     ) {
-        Image(
+        Image(modifier = Modifier,
             painter = painterResource(R.drawable.ic_man),
             contentDescription = "App icon"
         )

@@ -102,8 +102,8 @@ private fun SplashScreenContent(
         Text(text = "Welcome to our store", style = MaterialTheme.typography.small_caption)
         Image(
             modifier = Modifier
-                // .defaultMinSize(minWidth = 293.dp, minHeight = 387.dp)
-                .weight(1F)
+                 .defaultMinSize(minWidth = 293.dp, minHeight = 387.dp)
+//                .weight(1F)
                 .align(Alignment.CenterHorizontally),
             painter = painterResource(id = R.drawable.ic_splash),
             contentDescription = null
@@ -118,7 +118,7 @@ private fun SplashScreenContent(
         Spacer(modifier = Modifier.size(16.dp))
         Image(
             modifier = Modifier
-                .weight(0.25F)
+//                .weight(0.25F)
                 .align(Alignment.CenterHorizontally)
                 .clickable {
 //                    throw RuntimeException("Test Crash") // Force a crash

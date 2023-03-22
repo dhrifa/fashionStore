@@ -69,8 +69,8 @@ fun HomeScreen(
                 // Drawer content
                 //CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl )
                 Drawer(modifier = Modifier) {}
-            }
-        ,
+            },
+
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 modifier = Modifier

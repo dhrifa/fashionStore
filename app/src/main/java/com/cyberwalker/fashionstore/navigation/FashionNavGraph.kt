@@ -21,8 +21,13 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.cyberwalker.fashionstore.data.item1
 import com.cyberwalker.fashionstore.detail.DetailScreen
 import com.cyberwalker.fashionstore.detail.DetailScreenActions
@@ -31,8 +36,10 @@ import com.cyberwalker.fashionstore.home.HomeScreen
 import com.cyberwalker.fashionstore.home.HomeScreenActions
 import com.cyberwalker.fashionstore.login.LoginSCreen
 import com.cyberwalker.fashionstore.login.LoginScreenActions
+import com.cyberwalker.fashionstore.profile.ProfileScreen
 import com.cyberwalker.fashionstore.splash.SplashScreen
 import com.cyberwalker.fashionstore.splash.SplashScreenActions
+import com.cyberwalker.fashionstore.util.showMessage
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 
@@ -73,6 +80,19 @@ fun FashionNavGraph(
         animatedComposable(Screen.Detail.route) {
             DetailScreen(onAction = actions::navigateFromDetails/*, item = item1*/)
         }
+        
+//        composable(BottomNavItems.Home.screen_route){
+//            HomeScreen(onAction ={} , navController = navController)
+//        }
+        
+        composable(BottomNavItems.Profile.screen_route){
+            ProfileScreen( navController = navController)
+        }
+        
+        composable("${SHOW_DETAIL_SCREEN}/{item}",
+        arguments = listOf(navArgument("iten"){type=NavType.StringType})){
+         DetailScreen(onAction = {})   
+        }
     }
 }
 
@@ -112,3 +132,27 @@ class NavActions(private val navController: NavController) {
         }
     }
 }
+
+
+
+//@Composable
+//fun NavGraph(
+//    navController: NavHostController,
+////    studentsViewModel: StudentsViewModel
+//) {
+//    NavHost(navController, startDestination = BottomNavItems.Students.screen_route) {
+//        composable(BottomNavItems.Students.screen_route) {
+//            StudentsListScreen(navController, studentsViewModel)
+//        }
+//        composable(BottomNavItems.Actors.screen_route) {
+////            Content(title = "Actors")
+//        }
+//
+//        composable("${SHOW_DETAIL_SCREEN}/{student}",
+//            arguments = listOf(navArgument("student"){type= NavType.StringType})
+//        ) {
+//            StudentScreen(navController=navController,student = studentsViewModel.selectedStudent.value)  
+//        //studentsViewModel.selectedStudent.value?.let { it1 -> StudentScreen( student = it1) }
+//        }
+//    }
+//}
