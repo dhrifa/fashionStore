@@ -21,16 +21,11 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
-import com.cyberwalker.fashionstore.data.item1
 import com.cyberwalker.fashionstore.detail.DetailScreen
 import com.cyberwalker.fashionstore.detail.DetailScreenActions
+import com.cyberwalker.fashionstore.dump.BottomNavItem
 import com.cyberwalker.fashionstore.dump.animatedComposable
 import com.cyberwalker.fashionstore.home.HomeScreen
 import com.cyberwalker.fashionstore.home.HomeScreenActions
@@ -39,9 +34,17 @@ import com.cyberwalker.fashionstore.login.LoginScreenActions
 import com.cyberwalker.fashionstore.profile.ProfileScreen
 import com.cyberwalker.fashionstore.splash.SplashScreen
 import com.cyberwalker.fashionstore.splash.SplashScreenActions
-import com.cyberwalker.fashionstore.util.showMessage
 import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+
+
+//bottom bar
+const val HOME_SCREEN = "Home"
+const val PROFILE_SCREEN = "Profile"
+const val SEARCH_SCREEN = "Search"
+const val LIKED_SCREEN = "Liked"
+
 
 sealed class Screen(val name: String, val route: String) {
     object Splash : Screen("splash", "splash")
@@ -62,6 +65,7 @@ fun FashionNavGraph(
 ) {
     AnimatedNavHost(
         navController = navController,
+//        route = Graph.ROOT_GRAPH,
         startDestination = Screen.Splash.route,
         modifier = modifier
     ) {
@@ -74,32 +78,28 @@ fun FashionNavGraph(
         }
 
         animatedComposable(Screen.Home.route) {
-            HomeScreen(onAction = actions::navigateFromHome,navController = navController)
+            HomeScreen(onAction = actions::navigateFromHome, navController = navController)
+        }
+
+
+        animatedComposable(Screen.Detail.route) {
+            DetailScreen(onAction = actions::navigateFromDetails/*, item = item1*/)
+        }
+        composable(BottomNavItem.Profile.screen_route){
+            ProfileScreen( navController = navController)
         }
 
         animatedComposable(Screen.Detail.route) {
             DetailScreen(onAction = actions::navigateFromDetails/*, item = item1*/)
         }
-        
-//        composable(BottomNavItems.Home.screen_route){
-//            HomeScreen(onAction ={} , navController = navController)
-//        }
-        
-        composable(BottomNavItems.Profile.screen_route){
-            ProfileScreen( navController = navController)
-        }
-        
-        composable("${SHOW_DETAIL_SCREEN}/{item}",
-        arguments = listOf(navArgument("iten"){type=NavType.StringType})){
-         DetailScreen(onAction = {})   
-        }
+
     }
 }
 
 class NavActions(private val navController: NavController) {
     fun navigateToLogin(_A: SplashScreenActions) {
         navController.navigate(Screen.Login.name) {
-            popUpTo(Screen.Splash.route){
+            popUpTo(Screen.Splash.route) {
                 inclusive = true
             }
         }
@@ -118,6 +118,7 @@ class NavActions(private val navController: NavController) {
             }
         }
     }
+
     fun navigateFromHome(actions: HomeScreenActions) {
         when (actions) {
             HomeScreenActions.Details -> {
@@ -127,32 +128,9 @@ class NavActions(private val navController: NavController) {
     }
 
     fun navigateFromDetails(actions: DetailScreenActions) {
-        when(actions) {
+        when (actions) {
             DetailScreenActions.Back -> navController.popBackStack()
         }
     }
 }
 
-
-
-//@Composable
-//fun NavGraph(
-//    navController: NavHostController,
-////    studentsViewModel: StudentsViewModel
-//) {
-//    NavHost(navController, startDestination = BottomNavItems.Students.screen_route) {
-//        composable(BottomNavItems.Students.screen_route) {
-//            StudentsListScreen(navController, studentsViewModel)
-//        }
-//        composable(BottomNavItems.Actors.screen_route) {
-////            Content(title = "Actors")
-//        }
-//
-//        composable("${SHOW_DETAIL_SCREEN}/{student}",
-//            arguments = listOf(navArgument("student"){type= NavType.StringType})
-//        ) {
-//            StudentScreen(navController=navController,student = studentsViewModel.selectedStudent.value)  
-//        //studentsViewModel.selectedStudent.value?.let { it1 -> StudentScreen( student = it1) }
-//        }
-//    }
-//}
